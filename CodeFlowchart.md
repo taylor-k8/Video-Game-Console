@@ -20,8 +20,11 @@ Incremental program:
 
 ```mermaid
   graph TD;
-      UserInput-->B;
-      A-->C;
-      B-->D;
-      C-->D;
+      Start-->GetInput;
+      GetInput-->PressButton;
+      GetInput-->NoInput;
+      PressButton-->Success;
+      NoInput-->Failure;
+      Success-->Terminate;
+      Failure-->Terminate;
 ```
