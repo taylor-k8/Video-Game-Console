@@ -14,16 +14,4 @@ Incremental program:
 2. Next step:
   Moving dot to get across screen in time interval
 3. Next:
-  
- 
- 
- 
- 
- ```mermaid
-graph TD;
-    Input-->Press button to start;
-    Press button to start-->timer starts;
-    timer starts-->user presses button;
-    timer starts-->user doesn't press button;
-```
 
