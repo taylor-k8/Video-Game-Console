@@ -3,7 +3,7 @@ Imports required:
   - #include <TFT_eSPI.h> for the screen
   - none required for the joystick or buttons
 - Extra components: Pixel screen, lights, sound, rfid*
-  -for pixel screen: #include <LiquidCrystal.h>
+  - for pixel screen: #include <LiquidCrystal.h>
 
 Incremental program:
 1. Beginning Logic:
