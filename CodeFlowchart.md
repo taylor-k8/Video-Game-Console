@@ -14,4 +14,8 @@ Incremental program:
 2. Next step:
   Moving dot to get across screen in time interval
 3. Next:
+  moving dot avoinding obstacles
+  
+ flowchart TD
+   Start --> Stop
 
