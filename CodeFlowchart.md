@@ -1,8 +1,8 @@
 Imports required:
-  Main components: Screen, joystick, buttons
+- Main components: Screen, joystick, buttons
   - #include <TFT_eSPI.h> for the screen
   - none required for the joystick or buttons
-  /nExtra components: Pixel screen, lights, sound, rfid*
+- Extra components: Pixel screen, lights, sound, rfid*
   -for pixel screen: #include <LiquidCrystal.h>
 
 Incremental program:
