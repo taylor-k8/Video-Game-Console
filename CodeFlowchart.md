@@ -27,4 +27,5 @@ Incremental program:
       NoInput-->Failure;
       Success-->Terminate;
       Failure-->Terminate;
+      Terminate-->Start;
 ```
