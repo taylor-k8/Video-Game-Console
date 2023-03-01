@@ -16,6 +16,5 @@ Incremental program:
 3. Next:
   moving dot avoinding obstacles
   
- flowchart TD
-   Start --> Stop
+
 
