@@ -18,3 +18,10 @@ Incremental program:
   
 
 
+```mermaid
+  graph TD;
+      User Input-->B;
+      A-->C;
+      B-->D;
+      C-->D;
+```
