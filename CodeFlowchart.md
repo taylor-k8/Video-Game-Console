@@ -20,7 +20,7 @@ Incremental program:
 
 ```mermaid
   graph TD;
-      User Input-->B;
+      UserInput-->B;
       A-->C;
       B-->D;
       C-->D;
