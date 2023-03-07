@@ -1,1 +1,53 @@
+# ===================================================
+#               HOMESCREEN
+# ===================================================
 
+unsigned long lastFrame = millis();
+ 
+void loop(void) {
+ 
+// limit frame rate
+while((millis() - lastFrame) &lt; 20);
+lastFrame = millis();
+ 
+switch(gameState){
+case 1: // start
+gameState = 11;
+break;
+ 
+case 11: // click to play
+tft.fillRect((tftWidth/2)-100,(tftHeight/2)-20,200,40,ILI9341_GREEN);
+tft.setCursor((tftWidth/2)-100+25,(tftHeight/2)-20+12);
+tft.setTextSize(2);
+tft.setTextColor(ILI9341_WHITE);
+tft.print("CLICK TO PLAY");
+gameState = 12;
+break;
+ 
+case 12: // wait for click to play
+if (ts.touched()) {
+TS_Point p = ts.getPoint();
+ScreenPoint sp = getScreenCoords(p.x, p.y);
+if (checkCollision(sp.x, sp.y,1,1,(tftWidth/2)-50,(tftHeight/2)-20,100,40)){
+initGame();
+gameState = 2;
+}
+}
+break;
+ 
+case 2: // play
+ 
+moveBall();
+moveBat();
+checkHitBat();
+checkHitBlock();
+if (checkBallLost()){
+playerLives --;
+drawLives();
+if (playerLives &gt; 0){
+newBall();
+}
+else {
+gameState = 3; // end game
+}
+}
