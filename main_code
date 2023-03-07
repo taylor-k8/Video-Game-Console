@@ -32,23 +32,23 @@ int resetCount = 0;
 //               SETUP
 // ===================================================
 
-void setup() {
+//void setup() {
 
   // Initalize the screen and set the orientation correctly, then make sure it's clear.
-  tft.begin();
-  tft.setRotation(1);          //This give horizontal orientation
-  tft.fillScreen(BLACK);       //Make background be black
+  //tft.begin();
+  //tft.setRotation(1);          //This give horizontal orientation
+  //tft.fillScreen(BLACK);       //Make background be black
 
   // Set the cursor to the top left of the screen and print some text.
-  tft.setCursor(0, 0);
-  tft.setTextColor(WHITE);
-  tft.setTextSize(2);
-  tft.println("Welcome to our game!");
+  //tft.setCursor(0, 0);
+  //tft.setTextColor(WHITE);
+  //tft.setTextSize(2);
+  //tft.println("Welcome to our game!");
 
   // Tell the arduino that the joystick button is on pin 9 and write it high so it gets set to 0 when pushed.
-  pinMode(JOYSTICK_BUTTON_PIN, INPUT);
-  digitalWrite(JOYSTICK_BUTTON_PIN, HIGH);
-}
+  //pinMode(JOYSTICK_BUTTON_PIN, INPUT);
+  //digitalWrite(JOYSTICK_BUTTON_PIN, HIGH);
+//}
 
 
 // ===================================================
