@@ -102,4 +102,3 @@ void drawHomeScreen() {
 ######### End of segment: Used for setting background color of the text, setting up distance sensor button, and printing the text ######### 
 
 
-
