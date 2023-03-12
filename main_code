@@ -10,10 +10,15 @@
 //create the screen variable from the library
 TFT_eSPI tft = TFT_eSPI();       //rename as tft
 
-// Set up variables for the cursor and counter. Cursor starts at left of the screen. (note middle X = 240.0, middle Y = 160.0)
-float cursorX = 0.0;
+// Set up variables for the cursor and counter. Cursor starts in the middle of the screen.
+float cursorX = 300.0;
 float cursorY = 160.0;
 int resetCount = 0;
+int32_t radius1 = 5;
+int32_t radius2 = 6;
+int32_t height = 320;
+int32_t x_initial = 400;
+int32_t y_initial = 0;
 
 // Setting the joystick pins here so we can easily change them
 #define JOYSTICK_X_PIN A7
