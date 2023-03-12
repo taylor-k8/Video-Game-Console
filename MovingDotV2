@@ -88,8 +88,9 @@ void loop() {
     cursorY = 160.0;
   }
 
-  // draw a pixel where the cursor currently is 
+  // draw a circle and triangle where the cursor currently is 
   tft.fillCircle(int(cursorX), int(cursorY), radius1, CYAN);
+
 
   // update the point's previous location
   float xPrev=cursorX;
