@@ -79,8 +79,8 @@ void loop() {    //What does this do?
 
 //I think what we could do for overall game is to make functions for each task, then put them in the main loop (such as having void homescreeen(), void level1())
 
-void levelone(){
-  // Read input and map change the range from 0 - 1023 to -0.05 to 0.05. map() only creates integers, so divide by float to get float type 
+void loop() {
+  // Read input and map change the range from 0 - 1023 to -0.05 to 0.05. map() only creates integers. 
   float JoyStickX = map(analogRead(JOYSTICK_X_PIN), 0, 1023, -1000, 1000)/20000.0;
   float JoyStickY = map(analogRead(JOYSTICK_Y_PIN), 0, 1023, -1000, 1000)/20000.0;
 
@@ -92,28 +92,46 @@ void levelone(){
   cursorX = constrain(cursorX, 0,480);
   cursorY = constrain(cursorY, 0,320);
 
-  // Read the pin for the button in the joystick, and if pressed add one to resetCount. Otherwise, reset it to 0.
-  if (digitalRead(JOYSTICK_BUTTON_PIN) == 0){ 
-    resetCount += 1;
-    }
-  else{
-    resetCount = 0;
-    }
-
-  // If the button has been held for around a second, go to homescreen
+  // If the button has been held for around a second, reset the canvas.
   if (resetCount > 1000) {
-    //call homescreen function
-    setup()
+    tft.fillScreen(BLACK);
+
+    tft.setCursor(0, 0);
+    tft.setTextColor(WHITE);
+    tft.setTextSize(2);
+    tft.println("Welcome!");
+
+    cursorX = 300.0;
+    cursorY = 160.0;
   }
 
-  //If not in same position, cover trail behind to look like a dot
-  if(cursorX != xPrev || cursorY != yPrev){
-	  tft.stroke(0,0,0); // set the stroke color to black
-	  tft.point(xPrev, yPrev); // color in the previous point
+  // finish line
+  tft.drawFastVLine(x_initial, y_initial, height, WHITE);
+  if (cursorX>=x_initial){
+    tft.fillScreen(BLACK);
+
+    tft.setCursor(0, 0);
+    tft.setTextColor(WHITE);
+    tft.setTextSize(2);
+    tft.println("finished! play again!");
+
+
+    cursorX = 300.0;
+    cursorY = 160.0;
   }
-  // Finally, draw a circle where the cursor currently is 
-  tft.fill(int(cursorX), int(cursorY), MAGENTA);
+
+  // draw a circle and triangle where the cursor currently is 
+  tft.fillCircle(int(cursorX), int(cursorY), radius1, CYAN);
+
 
   // update the point's previous location
-  xPrev=cursorX;
-	yPrev=cursorY;
+  float xPrev=cursorX;
+	float yPrev=cursorY;
+
+  //If not in same position, cover trail behind to look like a dot
+  if(cursorX == xPrev || cursorY == yPrev){
+	  tft.drawCircle(int(cursorX), int(cursorY), radius1, BLACK); // set the stroke color to black
+    tft.drawCircle(int(cursorX), int(cursorY), radius2, BLACK); // set the stroke color to black
+  }
+  
+}
