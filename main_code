@@ -19,6 +19,7 @@ int32_t radius2 = 6;
 int32_t height = 320;
 int32_t x_initial = 400;
 int32_t y_initial = 0;
+x_end_of_screen = 480.0;
 
 // Setting the joystick pins here so we can easily change them
 #define JOYSTICK_X_PIN A7
@@ -112,31 +113,31 @@ void loop() {
 
   // finish line
   tft.drawFastVLine(x_initial, y_initial, height, WHITE);
-  if (cursorX>=x_initial){
+  if (cursorX>=x_end_of_screen){
     tft.fillScreen(BLACK);
-
     tft.setCursor(0, 0);
     tft.setTextColor(WHITE);
     tft.setTextSize(2);
-    tft.println("finished! play again!");
+    tft.println("Level Completed! Play again!");
 
 
-    cursorX = 300.0;
-    cursorY = 160.0;
+    //cursorX = 300.0;
+    //cursorY = 160.0;
   }
 
   // draw a circle and triangle where the cursor currently is 
-  tft.fillCircle(int(cursorX), int(cursorY), radius1, CYAN);
-
+  tft.fillCircle(int(cursorX), int(cursorY), radius1, YELLOW);
+  tft.fillTriangle(int(cursorX-5), int(cursorY), int(cursorX-7), int(cursorY-2), int(cursorX-7), int(cursorY+2), YELLOW)
 
   // update the point's previous location
   float xPrev=cursorX;
 	float yPrev=cursorY;
 
-  //If not in same position, cover trail behind to look like a dot
+  //If not in same position, cover trail behind to look like a fish
   if(cursorX == xPrev || cursorY == yPrev){
-	  tft.drawCircle(int(cursorX), int(cursorY), radius1, BLACK); // set the stroke color to black
-    tft.drawCircle(int(cursorX), int(cursorY), radius2, BLACK); // set the stroke color to black
+     tft.drawCircle(int(cursorX), int(cursorY), radius1, BLACK); // set the stroke color to black
+     tft.drawCircle(int(cursorX), int(cursorY), radius2, BLACK); // set the stroke color to black
+     tft.drawTriangle(int(cursorX-5), int(cursorY), int(cursorX-7), int(cursorY-2), int(cursorX-7), int(cursorY+2), BLACK)
   }
   
 }
