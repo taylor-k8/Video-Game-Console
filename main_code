@@ -1,17 +1,13 @@
-// ===================================================
-//               HOMESCREEN
-// ===================================================
+//=================================================================================================================================================
+// DEFINE VARIABLES
+//=================================================================================================================================================
 
-//https://howtomechatronics.com/tutorials/arduino/arduino-tft-lcd-touch-screen-tutorial/
-//https://docs.arduino.cc/retired/getting-started-guides/TFT#write-your-first-program
+#include <TFT_eSPI.h>
 
-
-//========== Libraries ========
-//create the screen variable from the library
-TFT_eSPI tft = TFT_eSPI();       //rename as tft
+TFT_eSPI tft = TFT_eSPI();      
 
 // Set up variables for the cursor and counter. Cursor starts in the middle of the screen.
-float cursorX = 300.0;
+float cursorX = 00.0;
 float cursorY = 160.0;
 int resetCount = 0;
 int32_t radius1 = 5;
@@ -19,12 +15,16 @@ int32_t radius2 = 6;
 int32_t height = 320;
 int32_t x_initial = 400;
 int32_t y_initial = 0;
-x_end_of_screen = 480.0;
+int32_t x_end_of_screen = 480.0;
+float yPrev = 0.0;
+float xPrev = 0.0;
+int var = 0;
+int32_t radiusrect = 3;
 
 // Setting the joystick pins here so we can easily change them
 #define JOYSTICK_X_PIN A7
 #define JOYSTICK_Y_PIN A6
-#define JOYSTICK_BUTTON_PIN 34
+#define JOYSTICK_BUTTON_PIN 30
 
 // Define colours in 4-digit hex                                  
 #define BLACK 0x0000
@@ -36,98 +36,29 @@ x_end_of_screen = 480.0;
 #define YELLOW 0xFFE0
 #define WHITE 0xFFFF
 
-//========== Implementing Text to Arduino ========
+//=================================================================================================================================================
+// SETUP SCREEN
+//=================================================================================================================================================
+
 void setup() {
-
-  // Put this line at the beginning of every sketch that uses the GLCD: //what is GLCD?
+  // Initalize the screen and set the orientation correctly, then make sure it's clear.
   tft.begin();
+  tft.setRotation(1);
+  tft.fillScreen(BLACK);
 
-  // clear the screen with a black background
-  tft.background(BLACK);
-
-  // set the font color to white
-  tft.stroke(WHITE);
-  
-  // set the font size
-  tft.setTextSize(2);
-  
-  // write the text to the top left corner of the screen
-  tft.text("PRESS START TO PLAY :\n ", 0, 0);
-  
-  // set the font size very large for the loop
-  tft.setTextSize(5);
-  
   // Tell the arduino that the joystick button is on pin 9 and write it high so it gets set to 0 when pushed.
   pinMode(JOYSTICK_BUTTON_PIN, INPUT);
   digitalWrite(JOYSTICK_BUTTON_PIN, HIGH);
 }
 
-//========== Text Specifics ========
+//=================================================================================================================================================
+// GAME FUNCTIONS
+//=================================================================================================================================================
 
-void loop() {    //What does this do?
-
-  // Read the value of the sensor on A0
-  String sensorVal = String(analogRead(A0));
-
-  // convert the reading to a char array
-  sensorVal.toCharArray(sensorPrintout, 4);
-
-  // set the font color
-  TFTscreen.stroke(255, 255, 255);
-  // print the sensor value
-  TFTscreen.text(sensorPrintout, 0, 20);
-  // wait for a moment
-  delay(250);
-  // erase the text you just wrote
-  TFTscreen.stroke(0, 0, 0);
-  TFTscreen.text(sensorPrintout, 0, 20);
-}
-
-//I think what we could do for overall game is to make functions for each task, then put them in the main loop (such as having void homescreeen(), void level1())
-
-void loop() {
-  // Read input and map change the range from 0 - 1023 to -0.05 to 0.05. map() only creates integers. 
-  float JoyStickX = map(analogRead(JOYSTICK_X_PIN), 0, 1023, -1000, 1000)/20000.0;
-  float JoyStickY = map(analogRead(JOYSTICK_Y_PIN), 0, 1023, -1000, 1000)/20000.0;
-
-  // Update cursor position
-  cursorY = cursorY + JoyStickY;
-  cursorX = cursorX + JoyStickX;
-
-  // Limit the cursor to the bounds of the screen
-  cursorX = constrain(cursorX, 0,480);
-  cursorY = constrain(cursorY, 0,320);
-
-  // If the button has been held for around a second, reset the canvas.
-  if (resetCount > 1000) {
-    tft.fillScreen(BLACK);
-
-    tft.setCursor(0, 0);
-    tft.setTextColor(WHITE);
-    tft.setTextSize(2);
-    tft.println("Welcome!");
-
-    cursorX = 300.0;
-    cursorY = 160.0;
-  }
-
-  // finish line
-  tft.drawFastVLine(x_initial, y_initial, height, WHITE);
-  if (cursorX>=x_end_of_screen){
-    tft.fillScreen(BLACK);
-    tft.setCursor(0, 0);
-    tft.setTextColor(WHITE);
-    tft.setTextSize(2);
-    tft.println("Level Completed! Play again!");
-
-
-    //cursorX = 300.0;
-    //cursorY = 160.0;
-  }
-
-  // draw a circle and triangle where the cursor currently is 
+void drawfish(){
+// draw a circle and triangle where the cursor currently is 
   tft.fillCircle(int(cursorX), int(cursorY), radius1, YELLOW);
-  tft.fillTriangle(int(cursorX-5), int(cursorY), int(cursorX-7), int(cursorY-2), int(cursorX-7), int(cursorY+2), YELLOW)
+  tft.fillTriangle(int(cursorX-7), int(cursorY), int(cursorX-9), int(cursorY-3), int(cursorX-9), int(cursorY+3), YELLOW);
 
   // update the point's previous location
   float xPrev=cursorX;
@@ -137,7 +68,79 @@ void loop() {
   if(cursorX == xPrev || cursorY == yPrev){
      tft.drawCircle(int(cursorX), int(cursorY), radius1, BLACK); // set the stroke color to black
      tft.drawCircle(int(cursorX), int(cursorY), radius2, BLACK); // set the stroke color to black
-     tft.drawTriangle(int(cursorX-5), int(cursorY), int(cursorX-7), int(cursorY-2), int(cursorX-7), int(cursorY+2), BLACK)
+     tft.drawTriangle(int(cursorX-7), int(cursorY), int(cursorX-9), int(cursorY-3), int(cursorX-9), int(cursorY+3), BLACK);
+     tft.drawTriangle(int(cursorX-8), int(cursorY), int(cursorX-10), int(cursorY-4), int(cursorX-10), int(cursorY+4), BLACK);
+     tft.fillTriangle(int(cursorX-13), int(cursorY), int(cursorX-15), int(cursorY-5), int(cursorX-15), int(cursorY+5), BLACK);
   }
-  
 }
+
+void playagain(){
+  //reset once level completed
+  tft.fillScreen(BLACK);
+  tft.setCursor(0, 0);
+  tft.setTextColor(WHITE);
+  tft.setTextSize(2);
+  tft.println("Level Completed! Play again!");
+
+  cursorX = 0.0;
+  cursorY = 160.0;
+}
+
+void drawobstacles(){
+  // finish line
+  tft.drawFastVLine(x_initial, y_initial, height, WHITE);
+}
+
+void readyScreen(){
+  //home screen display format
+  tft.fillScreen(BLACK);
+  tft.drawRoundRect(int32_t 50, int32_t 100, int32_t 350, int32_t 40, radiusrect, BLUE)
+  tft.setCursor(70.0, 150.0);
+  tft.setTextColor(WHITE);
+  tft.setTextSize(3);
+  tft.println("Press Down to Play!");
+}
+
+void home(){
+  //when to call homescreen display
+    while (var == 0) {
+    readyScreen();
+    if (digitalRead(JOYSTICK_BUTTON_PIN) == LOW){
+      tft.fillScreen(BLACK);
+      var = 1;
+    }
+  }
+}
+
+//=================================================================================================================================================
+// MAIN LOOP
+//=================================================================================================================================================
+
+void loop() {
+  // Read input and map change the range from 0 - 1023 to -0.05 to 0.05. map() only creates integers, so convert to float by dividing 
+  float JoyStickX = map(analogRead(JOYSTICK_X_PIN), 0, 1023, -1000, 1000)/3000.0;
+  float JoyStickY = map(analogRead(JOYSTICK_Y_PIN), 0, 1023, -1000, 1000)/3000.0;
+  
+  home();
+
+  // Update cursor position
+  cursorY = cursorY + JoyStickY;
+  cursorX = cursorX + JoyStickX;
+
+  // Limit the cursor to the bounds of the screen
+  cursorX = constrain(cursorX, 0,480);
+  cursorY = constrain(cursorY, 0,320);
+
+  drawobstacles();
+
+  // Level complete if at finish line
+  if (cursorX>=x_initial){
+    playagain();
+  }
+
+  //Draw the fish to move
+  drawfish();
+}
+
+//=================================================================================================================================================
+
