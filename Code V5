@@ -1,0 +1,342 @@
+//=================================================================================================================================================
+// DEFINE VARIABLES
+//=================================================================================================================================================
+
+#include <TFT_eSPI.h>
+#include "Fish.h"
+#include "Finishline.h"
+#include "Hook.h"
+
+TFT_eSPI tft = TFT_eSPI();
+
+// Set up variables for the cursor. Cursor starts in the middle of the screen.
+float cursorX = 240.0;
+float cursorY = 160.0;
+
+// Set up loop variables
+int x = 0;
+int var = 0;
+
+// Game mode variables
+int gamemode = 0;
+int PRACTICE = 5;
+int PLAY = 10;
+bool hometime = true;
+bool gametime = false;
+bool practicetime = false;
+bool decided = false;
+bool buttonPushed = 1;
+
+// Position Variables
+bool SCREEN_RESET = false;
+int FINISH_LINE = 480 - 16;
+
+float Xprev = cursorX;
+float Yprev = cursorY;
+
+// Setting the joystick pins here so we can easily change them
+#define JOYSTICK_X_PIN A7
+#define JOYSTICK_Y_PIN A6
+#define JOYSTICK_BUTTON_PIN 30
+
+// Define colours in 4-digit hex
+#define BLACK 0x0000
+#define BLUE 0x001F
+#define RED 0xF800
+#define GREEN 0x07E0
+#define CYAN 0x07FF
+#define MAGENTA 0xF81F
+#define YELLOW 0xFFE0
+#define WHITE 0xFFFF
+#define DGRAY 0x528A
+#define LGRAY 0x2945
+#define ORANGE 0xFC02
+
+// Create spries for the fish character and the hooks
+TFT_eSprite myFish = TFT_eSprite(&tft);
+TFT_eSprite hook1 = TFT_eSprite(&tft);
+TFT_eSprite hook2 = TFT_eSprite(&tft);
+TFT_eSprite hook3 = TFT_eSprite(&tft);
+TFT_eSprite hook4 = TFT_eSprite(&tft);
+
+// Width, height and properties of sprites
+#define WIDTH 25
+#define HEIGHT 18
+#define TFT_SDA_READ
+uint16_t* ptr;
+int n = 0;
+uint16_t bg[875] = { 0 };
+
+//=================================================================================================================================================
+// SETUP SCREEN
+//=================================================================================================================================================
+
+void setup() {
+  // Initalize the screen and set the orientation correctly, then make sure it's clear.
+  tft.init();
+  tft.setRotation(1);
+  tft.fillScreen(BLACK);
+
+  // Tell the arduino that the joystick button is on pin 9 and write it high so it gets set to 0 when pushed.
+  pinMode(JOYSTICK_BUTTON_PIN, INPUT);
+  digitalWrite(JOYSTICK_BUTTON_PIN, HIGH);
+
+  // Initialize all sprites for graphic elements
+  createFish();
+  createHook1();
+  createHook2();
+  createHook3();
+  createHook4();
+}
+
+//=================================================================================================================================================
+// GAME FUNCTIONS
+//=================================================================================================================================================
+
+void readyScreen() {
+  // Prints home screen display
+  tft.fillScreen(ORANGE);
+  tft.fillRect(int(0), int(0), int(480), int(160), BLACK);
+  tft.fillRect(int(240), int(160), int(240), int(160), BLUE);
+
+  tft.setCursor(160.0, 70.0);
+  tft.setTextColor(WHITE);
+  tft.setTextSize(3);
+  tft.println("FISH GAME");
+  myFish.pushImage(0, 0, 35, 25, Fish35x25);
+  myFish.pushSprite(60, 70, TFT_TRANSPARENT);
+  myFish.pushSprite(400, 70, TFT_TRANSPARENT);
+
+  tft.setCursor(50.0, 200.0);
+  tft.setTextColor(WHITE);
+  tft.setTextSize(1);
+  tft.println("Press Down to Practice!");
+  tft.setCursor(250.0, 200.0);
+  tft.println("Press Down to Play!");
+}
+
+int decision(bool buttonPushed) {
+  // Checks if the user has decided a game mode and returns the choice
+  if ((cursorY > 160) && (cursorX > 240)) {
+    selector(BLUE);
+    if (buttonPushed) {
+      gamemode = PLAY;
+    }
+  } else if ((cursorY > 160) && (cursorX <= 240)) {
+    selector(ORANGE);
+    if (buttonPushed) {
+      gamemode = PRACTICE;
+    }
+  } else {
+    selector(BLACK);
+  }
+  return gamemode;
+}
+
+void selector(int(bcolour)) {
+  // Makes a cursor which is covered up by the provided background colour
+  tft.setCursor(int(240), int(160));
+  tft.fillCircle(cursorX, cursorY, int(5), WHITE);
+  tft.drawCircle(cursorX, cursorY, int(5), bcolour);
+  tft.drawCircle(cursorX, cursorY, int(6), bcolour);
+}
+
+void createFish() {
+  // Initialize fish sprite
+  myFish.setColorDepth(16);
+  myFish.createSprite(35, 25);
+  myFish.pushImage(0, 0, 35, 25, Fish35x25);
+}
+
+void moveFish() {
+  // Move the fish sprite around the screen
+  myFish.pushSprite(cursorX, cursorY, TFT_TRANSPARENT);
+  if (cursorX != Xprev || cursorY != Yprev) {
+    tft.drawRect(cursorX, cursorY, int(40), int(40), BLACK);
+  }
+}
+
+void createHook1() {
+  // Initialize hook sprite
+  hook1.setColorDepth(16);
+  hook1.createSprite(12, 23);
+  hook1.pushImage(0, 0, 12, 23, Hook12x23);
+}
+
+void createHook2() {
+  // Initialize hook sprite
+  hook2.setColorDepth(16);
+  hook2.createSprite(12, 23);
+  hook2.pushImage(0, 0, 12, 23, Hook12x23);
+}
+
+void createHook3() {
+  // Initialize hook sprite
+  hook3.setColorDepth(16);
+  hook3.createSprite(12, 23);
+  hook3.pushImage(0, 0, 12, 23, Hook12x23);
+}
+
+void createHook4() {
+  // Initialize hook sprite
+  hook4.setColorDepth(16);
+  hook4.createSprite(25, 48);
+  hook4.pushImage(0, 0, 25, 48, Hook25x48);
+}
+
+void setFinishLine(int x_marks_finish) {
+  // Print finish line image to screen
+  tft.pushImage(x_marks_finish, 0, 16, 320, Finish16x320);
+}
+
+void reset(){
+  gamemode = 0;
+  hometime = true;
+  decided = false;
+  SCREEN_RESET = false;
+  myFish.pushImage(0, 0, 35, 25, Fish35x25);
+}
+//=================================================================================================================================================
+// MAIN LOOP
+//=================================================================================================================================================
+
+void loop() {
+  // Update loop variable
+  x += 1;
+
+  // Read input and map change the range from 0 - 1023 to -0.05 to 0.05. map() only creates integers, so convert to float by dividing
+  float JoyStickX = map(analogRead(JOYSTICK_X_PIN), 0, 1023, -1000, 1000) / 3500.0;
+  float JoyStickY = map(analogRead(JOYSTICK_Y_PIN), 0, 1023, -1000, 1000) / 3500.0;
+
+  // Update cursor position
+  cursorY = cursorY + JoyStickY;
+  cursorX = cursorX + JoyStickX;
+
+  // Limit the cursor to the bounds of the screen
+  cursorX = constrain(cursorX, 0, 480);
+  cursorY = constrain(cursorY, 0, 320);
+
+  // Check if button is pushed down
+  buttonPushed = (digitalRead(JOYSTICK_BUTTON_PIN) == LOW);
+
+  // Display the homescreen and check if decided
+  if (hometime) {
+    cursorX = 240;
+    cursorY = 160;
+    readyScreen();
+    hometime = false;
+  } else if (decided == false) {
+    gamemode = decision(buttonPushed);
+    if (gamemode > 0) {
+      decided = true;
+    }
+  }
+
+  // Set up practice mode screen
+  if (gamemode == PRACTICE) {
+    if (!SCREEN_RESET) {
+      tft.fillScreen(BLACK);
+      tft.pushImage(FINISH_LINE, 0, 16, 320, Finish16x320);
+
+      tft.setTextSize(1);
+      tft.setCursor(0, 0);
+      tft.println("Practice with the Joystick by getting the Fish to the Finish Line!");
+      tft.setCursor(0, 10);
+      tft.println("Press down to quit");
+      cursorX = 0;
+      cursorY = 160;
+      SCREEN_RESET = true;
+    }
+  }
+
+  // Set up the game mode screen
+  if (gamemode == PLAY) {
+    if (!SCREEN_RESET) {
+      tft.fillScreen(BLACK);
+      x = 0;
+      tft.pushImage(FINISH_LINE, 0, 16, 320, Finish16x320);
+      tft.setTextSize(1);
+      tft.setCursor(0, 0);
+      tft.println("Get the Fish to the Finish Line without hitting the Hooks!");
+      tft.setCursor(0, 10);
+      tft.println("Press down to quit");
+
+      hook1.pushSprite(200, 100, TFT_TRANSPARENT);
+      hook2.pushSprite(100, 186, TFT_TRANSPARENT);
+      hook3.pushSprite(300, 200, TFT_TRANSPARENT);
+      tft.drawFastVLine(int32_t(210), int32_t(10), int32_t(90), WHITE);
+      tft.drawFastVLine(int32_t(110), int32_t(20), int32_t(166), WHITE);
+      tft.drawFastVLine(int32_t(310), int32_t(10), int32_t(190), WHITE);
+
+      cursorX = 0;
+      cursorY = 160;
+      SCREEN_RESET = true;
+    }
+  }
+
+  // Play the practice mode game
+  if ((gamemode + SCREEN_RESET) == 6) {
+    moveFish();
+    if ((cursorX + 17.5) >= FINISH_LINE) {
+      tft.fillScreen(BLACK);
+      gamemode = 0;
+      hometime = true;
+      decided = false;
+      SCREEN_RESET = false;
+    }
+
+    // Reset to home screen
+    if (digitalRead(JOYSTICK_BUTTON_PIN) == LOW){
+      reset();
+    }
+  }
+
+  // Play the main game
+  if ((gamemode + SCREEN_RESET) == 11) {
+    moveFish();
+
+    if (
+      ((cursorX + 20) >= 200.0 && (cursorY + 20) >= 100.0 && (cursorX + 17) <= 212.0 && (cursorY + 12) <= 123.0) ||
+       ((cursorX + 20) >= 100.0 && (cursorY + 20) >= 186.0 && (cursorX + 17) <= 112.0 && (cursorY + 12) <= 209.0) ||
+        ((cursorX + 20) >= 300.0 && (cursorY + 20) >= 200.0 && (cursorX + 17) <= 312.0 && (cursorY + 12) <= 223.0)||
+        //((cursorX+20)>=109 && (cursorX+20)<=112 && (cursorY+20)<=166) || 
+        //((cursorX+20)==210 && (cursorY+20)<=90))
+      {
+      tft.fillScreen(BLACK);
+      myFish.pushImage(0, 0, 35, 25, deadfish35x25);
+
+      tft.setCursor(140, 30);
+      tft.setTextSize(3);
+      tft.println("GAME OVER");
+
+      tft.setCursor(140, 240);
+      tft.setTextSize(3);
+      tft.println("YOU DIED!");
+
+      if (x%15==0){reset();}
+      
+    }
+
+    if ((cursorX + 17.5) >= FINISH_LINE) {
+      tft.fillScreen(BLACK);
+
+      tft.setCursor(140, 30);
+      tft.setTextSize(3);
+      tft.println("GAME OVER");
+
+      tft.setCursor(140, 90);
+      tft.setTextSize(3);
+      tft.println("YOU WON!");
+      
+      if (x%15==0){reset();}
+
+    }
+
+    // Reset to home screen if push down
+    if (digitalRead(JOYSTICK_BUTTON_PIN) == LOW){
+      reset();
+    }
+  }
+}
+
+//=================================================================================================================================================
