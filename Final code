@@ -301,9 +301,9 @@ void loop() {
       ((cursorX + 35) >= 200.0 && (cursorY + 20) >= 100.0 && (cursorX + 17) <= 212.0 && (cursorY + 12) <= 123.0) ||
        ((cursorX + 35) >= 100.0 && (cursorY + 20) >= 186.0 && (cursorX + 17) <= 112.0 && (cursorY + 12) <= 209.0) ||
         ((cursorX + 35) >= 300.0 && (cursorY + 20) >= 200.0 && (cursorX + 17) <= 312.0 && (cursorY + 12) <= 223.0)||
-        ((cursorX+38)>=109 && (cursorX+40)<=112 && (cursorY+20)<=166) || 
+        ((cursorX+38)>=109 && (cursorX+40)<=112 && (cursorY+20)<=200) || 
         ((cursorX+38)>=209 && (cursorX+40)<=212 && (cursorY+20)<=90)||
-        ((cursorX+38)>= 309 && (cursorX+40)<=312 && (cursorY+20)<=190))
+        ((cursorX+38)>= 309 && (cursorX+40)<=312 && (cursorY+20)<=200))
       {
       tft.fillScreen(BLACK);
       myFish.pushImage(0, 0, 35, 25, deadfish35x25);
